@@ -1,0 +1,18 @@
+# Secrets
+.env
+**/.env
+
+# Private runtime data
+memory-v1/data/messages.json
+memory-v1/data/memories.json
+
+# Python
+__pycache__/
+*.py[cod]
+
+# macOS
+.DS_Store
+
+# Editors
+.vscode/
+.idea/

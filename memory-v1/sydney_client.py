@@ -2,7 +2,7 @@ from openai import OpenAI
 import httpx
 
 client = OpenAI(
-    base_url="http://192.168.1.31:1234/v1",
+    base_url="http://127.0.0.1:1234/v1",
     api_key="lm-studio",
 
     timeout=30.0,

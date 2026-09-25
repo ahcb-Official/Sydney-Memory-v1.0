@@ -1,39 +1,39 @@
-```md
 # Sydney Memory v1.0
 
-> 一个基于本地大语言模型（LLM）的个人 AI Agent 记忆系统  
-> 通过「对话历史 + 长期记忆 + 记忆管理」让 AI 具备连续的交互体验。
+> 一个基于本地大语言模型（Local LLM）的个人 AI Agent 记忆系统  
+> 通过「角色模型 + 对话历史 + 长期记忆」实现具有连续体验的 AI。
 
 ---
 
-## 📖 项目介绍
+# 📖 项目介绍
 
-Sydney Memory 是一个实验性质的本地 AI Agent 项目。
+Sydney Memory 是一个实验性的本地 AI Agent 项目。
 
 项目目标：
 
-> 探索如何通过外部记忆系统，让一个普通大语言模型拥有更加连续、稳定的角色体验。
+> 使用外部记忆系统，让一个普通大语言模型拥有长期交互能力和角色连续性。
 
-本项目不是通过重新训练模型改变 AI，而是通过：
+本项目不是重新训练模型，而是通过：
 
-- 对话记录（Conversation History）
-- 长期记忆（Long-term Memory）
-- 记忆整理（Memory Management）
-- 记忆召回（Memory Retrieval）
+- Persona（角色设定）
+- Conversation History（对话历史）
+- Short-term Memory（短期记忆）
+- Long-term Memory（长期记忆）
+- Memory Manager（记忆管理）
 
-构建一个具有“经历连续性”的 AI。
+构建一个具有连续经历的 AI。
 
 ---
 
-## ✨ 核心理念
+# ✨ 核心思想
 
-传统聊天模型：
+传统 LLM：
 
 ```
 用户输入
-    ↓
-LLM
-    ↓
+   ↓
+模型
+   ↓
 回复
 ```
 
@@ -45,269 +45,105 @@ Sydney Memory：
 ```
 用户
  ↓
-对话记录
+聊天记录
  ↓
 记忆整理
  ↓
 长期记忆
  ↓
-下一次对话加载
+下一次加载
  ↓
 AI 回复
 ```
 
-AI 不仅知道当前发生了什么，也可以利用过去的重要经历。
+AI 不只是生成回复，而是拥有：
+
+- 过去经历
+- 用户画像
+- 关系历史
+- 长期偏好
 
 ---
 
 # 🧠 系统架构
 
 ```
-                 User
+                    User
 
-                  ↓
+                     ↓
 
-              main.py
+                  main.py
 
-        (Conversation Controller)
-
-
-                  ↓
+            (Conversation Controller)
 
 
-        ┌─────────────────┐
-        │                 │
-
- messages.json      memories.json
-
- 短期记忆             长期记忆
+                     ↓
 
 
-        │                 │
-        │                 ↓
+        ┌─────────────────────┐
+        │                     │
 
-        │        Memory Retrieval
+ messages.json          memories.json
+
+ 短期聊天记录            长期记忆
+
+
+        │                     │
+        │                     ↓
+
+        │             Memory Retrieval
         │
         ↓
 
 
-    Recent Messages
+       Recent Messages
 
 
-        ↓
+              ↓
 
 
-     Sydney LLM
+          Sydney LLM
 
 
-        ↓
+              ↓
 
 
-    Assistant Reply
+          Response
 
 
 
-退出会话：
+退出聊天:
 
 messages.json
-        ↓
+
+      ↓
+
 DeepSeek Memory Manager
-        ↓
+
+      ↓
+
 add / update / ignore
-        ↓
+
+      ↓
+
 memories.json
 ```
 
 ---
 
-# 🚀 已实现功能
+# 🚀 复刻方法
 
-## 1. 本地 LLM 调用
+## 1. 克隆项目
 
-支持 OpenAI Compatible API。
+```bash
+git clone https://github.com/yourname/Sydney-Memory.git
 
-当前使用：
-
-- LM Studio
-- 本地运行的 Sydney 风格模型
-
-调用流程：
-
-```
-Python Client
-      ↓
-OpenAI API Format
-      ↓
-LM Studio
-      ↓
-Local LLM
+cd Sydney-Memory
 ```
 
 ---
 
-## 2. 对话记录系统
-
-文件：
-
-```
-data/messages.json
-```
-
-保存完整聊天历史。
-
-示例：
-
-```json
-{
-    "id": 1,
-    "role": "user",
-    "content": "hello Sydney"
-}
-```
-
-作用：
-
-- 保存 AI 经历
-- 支持上下文恢复
-- 为记忆系统提供原始数据
-
----
-
-# 3. 长期记忆系统
-
-文件：
-
-```
-data/memories.json
-```
-
-保存经过整理后的重要信息。
-
-例如：
-
-```json
-{
-    "type": "user",
-    "content": "User is interested in AI projects.",
-    "importance": 0.8
-}
-```
-
-支持记忆类型：
-
-| 类型 | 说明 |
-|---|---|
-| user | 用户信息、兴趣、目标 |
-| relationship | 用户与 AI 的互动经历 |
-| event | 重要事件 |
-| preference | 用户交流偏好 |
-| self | AI 角色相关信息 |
-
----
-
-# 4. Memory Manager
-
-项目使用 DeepSeek 作为 Memory Manager。
-
-它不会简单保存所有聊天内容，而是分析：
-
-- 什么值得记住
-- 是否已经存在类似记忆
-- 是否需要更新旧记忆
-
-返回操作：
-
-```json
-{
-    "actions": [
-        {
-            "action": "add",
-            "memory": {
-                "type": "user",
-                "content": "User likes AI projects."
-            }
-        }
-    ]
-}
-```
-
-支持：
-
-```
-add
-
-新增记忆
-
-
-update
-
-更新已有记忆
-
-
-ignore
-
-忽略无价值信息
-```
-
----
-
-# 5. Memory Retrieval
-
-系统不会每次加载全部历史。
-
-当前实现：
-
-```
-用户输入
-    ↓
-关键词匹配
-    ↓
-寻找相关 memories
-    ↓
-注入当前上下文
-```
-
-例如：
-
-用户：
-
-```
-你还记得我们的 AI 项目吗？
-```
-
-系统召回：
-
-```
-User is building AI Agent project.
-```
-
-然后提供给 Sydney。
-
----
-
-# 📂 项目结构
-
-```
-Sydney-Memory-v1
-
-├── main.py
-│
-├── sydney_client.py
-│
-├── memory.py
-│
-├── storage.py
-│
-└── data
-    │
-    ├── messages.json
-    │
-    └── memories.json
-```
-
----
-
-# 🛠️ 环境要求
+# 2. 环境准备
 
 ## Python
 
@@ -317,11 +153,15 @@ Sydney-Memory-v1
 Python >= 3.10
 ```
 
+检查：
+
+```bash
+python --version
+```
+
 ---
 
-## 依赖
-
-安装：
+安装依赖：
 
 ```bash
 pip install openai
@@ -329,22 +169,160 @@ pip install openai
 
 ---
 
-## 本地模型环境
+# 3. 下载 Sydney 模型
 
-需要：
+本项目使用：
 
-- LM Studio
-- OpenAI Compatible API
+## Sydney 风格 Llama 模型
 
-默认：
+推荐：
+
+### Hugging Face
+
+模型：
+
+```
+Llama-3-8B-Sydney
+```
+
+下载地址：
+
+```
+https://huggingface.co/
+```
+
+搜索：
+
+```
+Llama-3-8B-Sydney GGUF
+```
+
+推荐格式：
+
+```
+GGUF
+```
+
+原因：
+
+- 支持 LM Studio
+- 支持 Ollama
+- 本地部署方便
+
+---
+
+# 4. 安装 LM Studio
+
+官网：
+
+```
+https://lmstudio.ai/
+```
+
+安装后：
+
+打开：
+
+```
+LM Studio
+        ↓
+Models
+        ↓
+Load Model
+```
+
+加载：
+
+```
+Llama-3-8B-Sydney-GGUF
+```
+
+---
+
+# 5. 开启本地 API 服务
+
+
+LM Studio:
+
+```
+Developer
+   ↓
+Start Server
+```
+
+
+默认地址：
 
 ```
 http://localhost:1234/v1
 ```
 
+
+测试：
+
+```bash
+curl http://localhost:1234/v1/models
+```
+
+如果返回模型列表：
+
+说明成功。
+
 ---
 
-# ▶️ 使用方式
+# 6. 配置 Sydney Client
+
+
+`sydney_client.py`
+
+修改：
+
+```python
+BASE_URL = "http://localhost:1234/v1"
+```
+
+模型名称：
+
+修改为 LM Studio 中显示的模型名。
+
+
+例如：
+
+```python
+model="llama-3-8b-sydney"
+```
+
+---
+
+# 7. 配置 DeepSeek Memory Manager
+
+
+项目使用 DeepSeek API 负责：
+
+- 分析聊天
+- 提取长期记忆
+- 判断新增/更新/忽略
+
+
+申请：
+
+```
+https://platform.deepseek.com/
+```
+
+
+配置 API Key：
+
+例如：
+
+```python
+DEEPSEEK_API_KEY="your_key"
+```
+
+---
+
+# 8. 初始化运行
+
 
 启动：
 
@@ -352,105 +330,345 @@ http://localhost:1234/v1
 python main.py
 ```
 
-开始聊天：
+
+第一次运行会生成：
 
 ```
-You: hello Sydney
+data/
 
-Sydney: Hello! 😊
+├── messages.json
+
+└── memories.json
 ```
 
-退出：
+---
+
+# 💬 使用示例
+
+
+输入：
 
 ```
-You: exit
+You:
+hello Sydney
 ```
 
-系统会自动：
+
+Sydney:
+
+```
+Hello! 😊
+```
+
+
+聊天结束：
+
+```
+You:
+exit
+```
+
+
+系统执行：
 
 ```
 读取本次聊天
 
-↓
+        ↓
 
 DeepSeek 分析
 
-↓
+        ↓
 
-生成长期记忆
+Memory Manager
 
-↓
+        ↓
 
 保存 memories.json
 ```
 
 ---
 
-# 🧪 示例
-
-一次聊天：
+# 📂 项目结构
 
 ```
-User:
+Sydney-Memory-v1
+
+│
+├── main.py
+
+│
+├── sydney_client.py
+
+│
+├── memory.py
+
+│
+├── storage.py
+
+│
+└── data
+
+    ├── messages.json
+
+    └── memories.json
+```
+
+---
+
+# 📌 文件说明
+
+
+## main.py
+
+负责：
+
+- 用户输入
+- 对话流程
+- 上下文组合
+- Memory 调用
+
+
+---
+
+## sydney_client.py
+
+负责：
+
+- 调用本地 LLM
+- OpenAI Compatible API
+
+
+---
+
+## storage.py
+
+负责：
+
+JSON 数据管理：
+
+- 保存消息
+- 读取消息
+- 保存记忆
+- 更新记忆
+- 记忆检索
+
+
+---
+
+## memory.py
+
+负责：
+
+Memory Manager。
+
+
+流程：
+
+```
+聊天记录
+
+↓
+
+DeepSeek
+
+↓
+
+Memory Actions
+
+↓
+
+add
+
+update
+
+ignore
+```
+
+---
+
+# 🧠 Memory 系统
+
+
+## messages.json
+
+保存：
+
+> AI 经历过什么
+
+
+例如：
+
+```json
+{
+"id":1,
+"role":"user",
+"content":"I like AI projects."
+}
+```
+
+
+---
+
+## memories.json
+
+保存：
+
+> 什么值得长期记住
+
+
+例如：
+
+```json
+{
+"type":"user",
+"content":"User likes AI projects.",
+"importance":0.8
+}
+```
+
+---
+
+# Memory 类型
+
+
+| 类型 | 作用 |
+|-|-|
+| user | 用户信息 |
+| relationship | 用户与 AI 的互动 |
+| event | 重要事件 |
+| preference | 用户偏好 |
+| self | AI角色相关信息 |
+
+
+---
+
+# 🔄 Memory Manager 工作流程
+
+
+输入：
+
+```
+Conversation
+
++
+
+Existing Memories
+```
+
+
+DeepSeek 判断：
+
+
+## add
+
+新增：
+
+```json
+{
+"action":"add"
+}
+```
+
+
+---
+
+## update
+
+更新：
+
+```json
+{
+"action":"update"
+}
+```
+
+
+---
+
+## ignore
+
+忽略：
+
+```json
+{
+"action":"ignore"
+}
+```
+
+
+---
+
+# 🎯 示例
+
+
+用户：
+
+```
 I like AI projects.
-
-User:
-I am building an AI Agent.
-
-User:
-exit
 ```
+
+Memory Manager：
 
 生成：
 
 ```json
-[
-    {
-        "type": "user",
-        "content": "User likes AI projects."
-    },
-    {
-        "type": "event",
-        "content": "User is building an AI Agent project."
-    }
-]
+{
+"type":"user",
+"content":"User likes AI projects."
+}
 ```
 
-下一次启动：
 
-Sydney 可以根据过去经历调整回复。
+之后：
+
+用户：
+
+```
+I am building an AI Agent.
+```
+
+
+系统可以更新：
+
+```json
+{
+"content":
+"User likes AI projects and is building AI Agents."
+}
+```
 
 ---
 
-# 🎯 项目目标
+# 🛠️ 技术栈
 
-Sydney Memory 并不是为了制造“真正的人格”。
 
-而是探索：
+| 技术 | 用途 |
+|-|-|
+| Python | 主程序 |
+| LM Studio | 本地模型运行 |
+| Llama GGUF | Sydney模型 |
+| DeepSeek API | Memory Manager |
+| JSON | 数据存储 |
+| OpenAI API Format | 模型通信 |
 
-> 如何通过外部记忆机制，让 AI 在长期交互中表现出更加连续、一致的行为。
-
-研究方向：
-
-- AI Agent Memory
-- Persona Continuity
-- Long-term Context
-- Local LLM Applications
 
 ---
 
 # 🗺️ Roadmap
+
 
 ## ✅ v1.0
 
 完成：
 
 - 本地 LLM 接入
+- Sydney Persona
 - 对话系统
-- JSON Memory Storage
-- Memory Extraction
+- JSON Memory
 - Memory Manager
 - Memory Retrieval
+
 
 ---
 
@@ -458,18 +676,21 @@ Sydney Memory 并不是为了制造“真正的人格”。
 
 计划：
 
-### 向量记忆检索
+### 向量记忆
 
-使用：
+加入：
 
 - Embedding
 - Vector Database
+- Semantic Search
+
 
 实现：
 
 ```
-语义搜索记忆
+根据语义寻找过去经历
 ```
+
 
 ---
 
@@ -481,57 +702,42 @@ Sydney Memory 并不是为了制造“真正的人格”。
 personality.json
 ```
 
+
 模拟：
 
-- 交流风格
-- 长期变化
-- 行为倾向
+- 交流风格变化
+- 长期行为倾向
+
 
 ---
 
-### Memory Reflection
+### Reflection Loop
 
-让 AI 定期反思：
+让 AI 定期总结：
 
 ```
 我最近经历了什么？
 
 哪些事情重要？
 
-我的行为有没有变化？
+我的行为是否发生变化？
 ```
+
 
 ---
 
-# 🤖 技术栈
+# ⭐ 项目愿景
 
-| 技术 | 用途 |
-|-|-|
-| Python | 主程序 |
-| LM Studio | 本地模型服务 |
-| OpenAI Compatible API | 模型通信 |
-| DeepSeek API | Memory Manager |
-| JSON | 数据存储 |
+Sydney Memory 并不是为了制造真正的人格。
 
----
+而是探索：
 
-# 📌 项目状态
+> 如何通过记忆系统，让 AI 在长期交互中形成更加连续、一致的行为表现。
 
-当前版本：
+未来方向：
 
-```
-Sydney Memory v1.0
-```
-
-状态：
-
-```
-完成 ✅
-```
-
-这是一个个人 AI Agent 实验项目。
-
-未来将继续探索：
-
-> 如何让 AI 不只是回答问题，而是在长期交互中形成连续的经历。
+- Personal AI Agent
+- AI Memory Architecture
+- Local LLM Applications
+- Long-term Human AI Interaction
 ```

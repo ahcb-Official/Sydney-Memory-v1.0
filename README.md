@@ -136,7 +136,7 @@ memories.json
 ## 1. 克隆项目
 
 ```bash
-git clone https://github.com/ahcb-Offical/Sydney-Memory.git
+git clone https://github.com/ahcb-Official/Sydney-Memory-v1.0
 
 cd Sydney-Memory
 ```
